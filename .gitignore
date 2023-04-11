@@ -1,0 +1,14 @@
+.ipynb_checkpoints/*
+**/figures/*
+**/saved_models/*
+**/logs/*
+**/dataset/*
+**/notebooks/*
+**/*.log
+**/*.pyc
+**/.hydra/*
+.vscode/*
+**/__pycache__/*
+**/.DS_Store
+**/*.egg-info
+.pytest_cache/*
