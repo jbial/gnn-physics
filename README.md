@@ -1,5 +1,12 @@
 # Modeling complex dynamical systems with graph neural networks (GNNs)
 
+### Setup
+First run 
+```
+pip install -e .
+pip install -r requirements.txt
+```
+
 ### Datasets
 Visit https://www.designsafe-ci.org/data/browser/public/designsafe.storage.published//PRJ-3702/SandRamps/dataset to download the SandRamps dataset which consists of the following files:
 ```
