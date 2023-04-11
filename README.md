@@ -1,7 +1,6 @@
 # Modeling complex dynamical systems with graph neural networks (GNNs)
 
 ### Setup
-First run 
 ```
 pip install -e .
 pip install -r requirements.txt
