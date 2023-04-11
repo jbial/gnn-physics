@@ -1,1 +1,1 @@
-import ran
+import rando
