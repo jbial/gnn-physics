@@ -1,0 +1,9 @@
+torch
+hydra-core
+wandb
+tqdm
+scipy
+numpy
+matplotlib
+pymunk
+opencv-python

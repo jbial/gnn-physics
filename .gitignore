@@ -2,7 +2,7 @@
 **/figures/*
 **/saved_models/*
 **/logs/*
-**/dataset/*
+**/datasets/*
 **/notebooks/*
 **/*.log
 **/*.pyc
