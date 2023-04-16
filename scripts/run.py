@@ -3,7 +3,7 @@ import hydra
 import torch_geometric as pyg
 
 from simulator.utils import set_seed
-from simulator.datasets import rope_dataset
+from simulator.data import rope_dataset
 
 
 @hydra.main(config_path='../config', config_name='config', version_base=None)
