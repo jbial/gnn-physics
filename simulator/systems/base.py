@@ -21,10 +21,9 @@ def norm(x, p=2):
 
 
 class Engine(object):
-    def __init__(self, dt, state_dim, action_dim, param_dim):
+    def __init__(self, dt, state_dim, param_dim):
         self.dt = dt
         self.state_dim = state_dim
-        self.action_dim = action_dim
         self.param_dim = param_dim
 
         self.state = None
@@ -54,12 +53,6 @@ class Engine(object):
     def set_scene(self, state, param):
         self.state = state.copy()
         self.param = param.copy()
-
-    def get_action(self):
-        return self.action.copy()
-
-    def set_action(self, action):
-        self.action = action.copy()
 
     def d(self, state, t, param):
         # time derivative

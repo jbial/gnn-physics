@@ -7,3 +7,5 @@ numpy
 matplotlib
 pymunk
 opencv-python
+torch-geometric
+torch-cluster
