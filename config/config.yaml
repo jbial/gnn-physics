@@ -1,6 +1,7 @@
 # ----------------------------------- HYPERPARAMETER CONFIG FILE -----------------------------------
 defaults:  
   - _self_
+  - model
   - system: rope 
   - override hydra/hydra_logging: disabled  
   - override hydra/job_logging: disabled

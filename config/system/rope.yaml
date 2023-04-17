@@ -1,5 +1,7 @@
 # -------------- Hyperparameters for the rope system --------------
 
+data_dir: "datasets/SpringPendulum"
+
 # for generating rollouts and data
 n_bodies_range: [4, 8] 
 k_range: [500., 1500.]
@@ -11,17 +13,20 @@ init_height: 1.0
 rest_length: 0.3
 radius: 0.06
 mass: 5.
-damping_factor: 0.25
+damping_factor: 0.1
 
 dt: 0.02
 n_rollout: 20
 timesteps: 100
-state_dim: 6
+dim: 2
+state_dim: 6  # [pos, vel, acc]
 param_dim: 5
-n_splits: 5
+
+# for generating data
+generate_data: false
 
 # for training
-window_size: 7
-noise_std: 0
+window_length: 7
+noise_std: 3e-4
 
 video: True
