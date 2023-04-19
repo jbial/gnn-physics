@@ -61,19 +61,16 @@ class InteractionNetwork(pyg.nn.MessagePassing):
 
 class LearnedSimulator(torch.nn.Module):
     """Graph Network-based Simulators(GNS)"""
-    def __init__(
-        self,
-        hidden_size=128,
-        n_mp_layers=10, # number of GNN layers
-        num_particle_types=9,
-        particle_type_dim=16, # embedding dimension of particle types
-        dim=2, # dimension of the world, typical 2D or 3D
-        window_size=5, # the model looks into W frames before the frame to be predicted
-    ):
+    def __init__(self, dim, hparams):
         super().__init__()
-        self.window_size = window_size
+        hidden_size = hparams.hidden_size
+        n_mp_layers = hparams.n_mp_layers
+        num_particle_types = hparams.num_particle_types
+        particle_type_dim = hparams.particle_type_dim
+
+        self.window_size = hparams.window_size
         self.embed_type = torch.nn.Embedding(num_particle_types, particle_type_dim)
-        self.node_in = MLP(particle_type_dim + dim * (window_size + 2), hidden_size, hidden_size, 3)
+        self.node_in = MLP(particle_type_dim + dim * (self.window_size + 2), hidden_size, hidden_size, 3)
         self.edge_in = MLP(dim + 1, hidden_size, hidden_size, 3)
         self.node_out = MLP(hidden_size, hidden_size, dim, 3, layernorm=False)
         self.n_mp_layers = n_mp_layers

@@ -1,8 +1,8 @@
 # ------------------------- Hyperparameters for the simulator model -------------------------
 model:
 
-  hidden_size: 128
-  n_mp_layers: 10  # number of message passing rounds
+  hidden_size: 8
+  n_mp_layers: 1  # number of message passing rounds
   num_particle_types: 9
   particle_type_dim: 16  # embedding dimension of particle types
   window_size: 5  # the model looks into W frames before the frame to be predicted

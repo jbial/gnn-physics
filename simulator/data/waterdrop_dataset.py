@@ -122,26 +122,10 @@ class WaterDropOneStepDataset(ManyBodySystem, pyg.data.Dataset):
         return graph
     
 
-class WaterDropRolloutDataset(ManyBodySystem, pyg.data.Dataset):
+class WaterDropRolloutDataset(WaterDropOneStepDataset, pyg.data.Dataset):
 
     def __init__(self, params, split):
         super().__init__(params)
-        
-        # load data from the disk
-        with open(os.path.join(params.data_path, "metadata.json")) as f:
-            self.metadata = json.load(f)
-        with open(os.path.join(params.data_path, f"{split}_offset.json")) as f:
-            self.offset = json.load(f)
-        self.offset = {int(k): v for k, v in self.offset.items()}
-
-        self.particle_type = np.memmap(
-            os.path.join(params.data_path, f"{split}_particle_type.dat"), dtype=np.int64, mode="r")
-        self.position = np.memmap(
-            os.path.join(params.data_path, f"{split}_position.dat"), dtype=np.float32, mode="r")
-
-        for traj in self.offset.values():
-            self.dim = traj["position"]["shape"][2]
-            break
 
     def len(self):
         return len(self.offset)
@@ -157,3 +141,28 @@ class WaterDropRolloutDataset(ManyBodySystem, pyg.data.Dataset):
         position = torch.from_numpy(position)
         data = {"particle_type": particle_type, "position": position}
         return data
+    
+    def rollout(self, model, data):
+        device = next(model.parameters()).device
+        model.eval()
+        window_size = model.window_size + 1
+        total_time = data["position"].shape[0]
+        traj = data["position"][:window_size]
+        traj = traj.permute(1, 0, 2)
+        particle_type = data["particle_type"]
+
+        for _ in range(total_time - window_size):
+            with torch.no_grad():
+                graph = self.preprocess(particle_type, traj[:, -window_size:], None, 0.0)
+                graph = graph.to(device)
+                acceleration = model(graph).cpu()
+                acceleration *= torch.sqrt(torch.tensor(self.acc_std) ** 2 + self.noise_std ** 2) + torch.tensor(self.acc_mean)
+
+                # Verlet integration
+                recent_position = traj[:, -1]
+                recent_velocity = recent_position - traj[:, -2]
+                new_velocity = recent_velocity + acceleration
+                new_position = recent_position + new_velocity
+                traj = torch.cat((traj, new_position.unsqueeze(1)), dim=1)
+
+        return traj
