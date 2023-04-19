@@ -1,3 +1,3 @@
-from .base import generate_noise, preprocess
+from .base import ManyBodySystem
 from .rope_dataset import RopeOneStepDataset, RopeRolloutDataset
 from .waterdrop_dataset import WaterDropOneStepDataset, WaterDropRolloutDataset

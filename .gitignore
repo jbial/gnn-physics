@@ -1,6 +1,6 @@
 .ipynb_checkpoints/*
 **/figures/*
-**/saved_models/*
+**/models/*
 **/logs/*
 **/datasets/*
 **/notebooks/*

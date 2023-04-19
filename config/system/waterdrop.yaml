@@ -1,2 +1,7 @@
 # -------------- Hyperparameters for the waterdrop system --------------
 
+data_dir: "datasets/WaterDropSmall/"
+
+dim: 2
+window_length: 7
+noise_std: 0

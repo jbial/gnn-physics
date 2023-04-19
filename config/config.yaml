@@ -1,11 +1,12 @@
 # ----------------------------------- HYPERPARAMETER CONFIG FILE -----------------------------------
 defaults:  
   - _self_
+  - model
+  - train
+  - figure
   - system: rope 
   - override hydra/hydra_logging: disabled  
   - override hydra/job_logging: disabled
-
-random_seed: 4342
 
 hydra:
   output_subdir: null

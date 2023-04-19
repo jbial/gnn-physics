@@ -1,0 +1,5 @@
+# ---------------------------------- Parameters for visualization ----------------------------------
+figure:
+  figsize: [10, 10]
+  dpi: 100
+  save_format: png

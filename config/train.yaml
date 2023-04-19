@@ -1,0 +1,12 @@
+## ----------------------------------- HYPERPARAMETER CONFIG FILE -----------------------------------
+epochs: 5
+batch_size: 4
+lr: 1e-4
+save_interval: 100
+eval_interval: 100
+rollout_interval: 100
+
+random_seed: 4342
+tag: run  # for saving
+
+pretrained_path: null

@@ -21,33 +21,18 @@ class RopeEngine(Engine):
         self.params = params
         self.radius = params.radius
         self.mass = params.mass
-        self.num_mass_range = params.n_bodies_range
-        self.k_range = params.k_range
-        self.gravity_range = params.gravity_range
+        self.n_ball = params.n_bodies
+        self.k = params.spring_constant
+        self.gravity = params.gravity
+        self.damping = self.k*params.damping_factor
         self.position_range = params.position_range
-
+        self.compression_range = params.compression_range
 
         super(RopeEngine, self).__init__(params.dt, params.state_dim, params.param_dim)
 
-    def init(self, param=None):
-        if param is None:
-            self.n_ball, self.init_x, self.k, self.damping, self.gravity = [None]*self.param_dim 
-        else:
-            self.n_ball, self.init_x, self.k, self.damping, self.gravity = param
-            self.n_ball = int(self.n_ball)
-
-        num_mass_range = self.num_mass_range
+    def init(self):
         position_range = self.position_range
-        if self.n_ball is None:
-            self.n_ball = rand_int(num_mass_range[0], num_mass_range[1])
-        if self.init_x is None:
-            self.init_x = np.random.rand() * (position_range[1] - position_range[0]) + position_range[0]
-        if self.k is None:
-            self.k = rand_float(self.k_range[0], self.k_range[1])
-        if self.damping is None:
-            self.damping = self.k*self.params.damping_factor
-        if self.gravity is None:
-            self.gravity = rand_float(self.gravity_range[0], self.gravity_range[1])
+        self.init_x = np.random.rand() * (position_range[1] - position_range[0]) + position_range[0]
         self.param = np.array([self.n_ball, self.init_x, self.k, self.damping, self.gravity])
 
         self.space = pymunk.Space()
@@ -70,7 +55,8 @@ class RopeEngine(Engine):
         self.balls = []
 
         for i in range(self.n_ball):
-            body = pymunk.Body(self.mass, inertia)
+            mass = 100 if i == 0 else self.mass
+            body = pymunk.Body(mass, inertia)
             body.position = Vec2d(x, y)
             shape = pymunk.Circle(body, self.radius, (0, 0))
 
@@ -83,9 +69,12 @@ class RopeEngine(Engine):
 
             self.balls.append(body)
 
-            factor = (i+1)/self.n_ball
-            y += factor*self.rest_len
-            x += np.sqrt((1-factor**2)*self.rest_len)
+            # sample angle btwn -60 and 60 degrees
+            # factor = np.random.uniform(*self.compression_range)
+            # factor = 2-factor if np.random.rand() > 0.5 else factor
+            theta = np.random.beta(a=0.5, b=0.5)*(np.pi/3)
+            x -= self.rest_len*np.sin(theta)
+            y -= self.rest_len*np.cos(theta)
 
     def add_rels(self):
         give = 1. + 0.075
