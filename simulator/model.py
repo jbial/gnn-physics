@@ -1,6 +1,5 @@
 """Contains code for the GNN simulator
 """
-import math
 import torch
 import torch_scatter
 import torch_geometric as pyg
@@ -20,13 +19,6 @@ class MLP(torch.nn.Module):
                 self.layers.append(torch.nn.ReLU())
         if layernorm:
             self.layers.append(torch.nn.LayerNorm(output_size))
-        self.reset_parameters()
-
-    def reset_parameters(self):
-        for layer in self.layers:
-            if isinstance(layer, torch.nn.Linear):
-                layer.weight.data.normal_(0, 1 / math.sqrt(layer.in_features))
-                layer.bias.data.fill_(0)
 
     def forward(self, x):
         for layer in self.layers:
@@ -60,7 +52,7 @@ class InteractionNetwork(pyg.nn.MessagePassing):
 
 
 class LearnedSimulator(torch.nn.Module):
-    """Graph Network-based Simulators(GNS)"""
+    """Graph Network-based Simulators (GNS)"""
     def __init__(self, dim, hparams):
         super().__init__()
         hidden_size = hparams.hidden_size
@@ -70,12 +62,12 @@ class LearnedSimulator(torch.nn.Module):
 
         self.window_size = hparams.window_size
         self.embed_type = torch.nn.Embedding(num_particle_types, particle_type_dim)
-        self.node_in = MLP(particle_type_dim + dim * (self.window_size + 2), hidden_size, hidden_size, 3)
-        self.edge_in = MLP(dim + 1, hidden_size, hidden_size, 3)
-        self.node_out = MLP(hidden_size, hidden_size, dim, 3, layernorm=False)
+        self.node_in = MLP(particle_type_dim + dim * (self.window_size + 2), hidden_size, hidden_size, 2)
+        self.edge_in = MLP(dim + 1, hidden_size, hidden_size, 2)
+        self.node_out = MLP(hidden_size, hidden_size, dim, 2, layernorm=False)
         self.n_mp_layers = n_mp_layers
         self.layers = torch.nn.ModuleList([InteractionNetwork(
-            hidden_size, 3
+            hidden_size, 2
         ) for _ in range(n_mp_layers)])
 
         self.reset_parameters()

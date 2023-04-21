@@ -31,8 +31,7 @@ class RopeEngine(Engine):
         super(RopeEngine, self).__init__(params.dt, params.state_dim, params.param_dim)
 
     def init(self):
-        position_range = self.position_range
-        self.init_x = np.random.rand() * (position_range[1] - position_range[0]) + position_range[0]
+        self.init_x = 0
         self.param = np.array([self.n_ball, self.init_x, self.k, self.damping, self.gravity])
 
         self.space = pymunk.Space()
@@ -55,8 +54,7 @@ class RopeEngine(Engine):
         self.balls = []
 
         for i in range(self.n_ball):
-            mass = 100 if i == 0 else self.mass
-            body = pymunk.Body(mass, inertia)
+            body = pymunk.Body(self.mass, inertia)
             body.position = Vec2d(x, y)
             shape = pymunk.Circle(body, self.radius, (0, 0))
 
@@ -72,17 +70,16 @@ class RopeEngine(Engine):
             # sample angle btwn -60 and 60 degrees
             # factor = np.random.uniform(*self.compression_range)
             # factor = 2-factor if np.random.rand() > 0.5 else factor
-            theta = np.random.beta(a=0.5, b=0.5)*(np.pi/3)
+            theta = np.random.beta(a=0.5, b=0.5)*(np.pi/2)
             x -= self.rest_len*np.sin(theta)
             y -= self.rest_len*np.cos(theta)
 
     def add_rels(self):
-        give = 1. + 0.075
         # add springs over adjacent balls
         for i in range(self.n_ball-1):
             c = pymunk.DampedSpring(
                 self.balls[i], self.balls[i + 1], (0, 0), (0, 0),
-                rest_length=self.rest_len * give, stiffness=self.k, damping=self.damping)
+                rest_length=self.rest_len, stiffness=self.k, damping=self.damping)
             self.space.add(c)
 
     def get_param(self):

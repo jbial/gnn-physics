@@ -10,3 +10,4 @@ opencv-python
 torch-geometric
 torch-cluster
 networkx
+gradient-descent-the-ultimate-optimizer
