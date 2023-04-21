@@ -24,4 +24,6 @@ The other datasets are generated via the physics engine.
 
 ### Examples
 To run the mass spring pendulum:
-`python3 scripts/run.py system=rope system.dt=0.01 system.timesteps=300 system.noise_std=3e-4 system.generate_data=True batch_size=20 epochs=10 lr=1e-5 save_interval=10000 eval_interval=2500 rollout_interval=2500 model.n_mp_layers=1 random_seed=654 tag=mean model.hidden_size=64`
+```
+python3 scripts/run.py system=rope system.dt=0.01 system.timesteps=300 system.noise_std=3e-4 system.generate_data=True batch_size=20 epochs=10 lr=1e-5 save_interval=10000 eval_interval=2500 rollout_interval=2500 model.n_mp_layers=1 random_seed=654 tag=mean model.hidden_size=64
+```
