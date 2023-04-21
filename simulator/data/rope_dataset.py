@@ -143,10 +143,8 @@ class RopeOneStepDataset(pyg.data.Dataset):
     def node_features(self, position, velocity_seq):
         """Node-level features: velocity, distance to the boundary
         """
-        delta_x = position[:, -1] - position[:, -2]
-        delta_x_size = delta_x.square().sum(dim=-1, keepdims=True)
-        rest_length = self.params.rest_length*torch.ones_like(delta_x_size)
-        position_feats = torch.cat([delta_x, delta_x_size, rest_length], dim=-1)
+        delta_x = torch.cat([torch.zeros(1, self.params.dim), position[:, -1].diff(dim=0)], dim=0)
+        position_feats = torch.cat([delta_x/self.params.rest_length, position[:, -1]], dim=-1)
         return torch.cat((velocity_seq.reshape(velocity_seq.shape[0], -1), position_feats), dim=-1)
     
     def edge_features(self, position, edge_index):

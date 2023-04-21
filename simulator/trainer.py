@@ -5,15 +5,19 @@ import torch
 
 from tqdm import tqdm
 from simulator.evaluation import rolloutMSE, oneStepMSE
+from gradient_descent_the_ultimate_optimizer import gdtuo
 
 
 def train(params, simulator, train_loader, valid_loader, valid_rollout_dataset):
     model_path = f"models/{params.system.data_dir.split('/')[-1]}"
     os.makedirs(model_path, exist_ok=True)
 
-    loss_fn = torch.nn.MSELoss()
-    optimizer = torch.optim.Adam(simulator.parameters(), lr=params["lr"])
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.1 ** (1/5e6))
+    optim = gdtuo.Adam(optimizer=gdtuo.Adam(params.lr))
+    mw = gdtuo.ModuleWrapper(simulator, optimizer=optim)
+    mw.initialize()
+
+    # optimizer = torch.optim.Adam(simulator.parameters(), lr=params["lr"])
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 
     # recording loss curve
     train_loss_list = []
@@ -29,18 +33,24 @@ def train(params, simulator, train_loader, valid_loader, valid_rollout_dataset):
         total_loss = 0
         batch_count = 0
         for data in progress_bar:
-            optimizer.zero_grad()
-            # data = data.cuda()
+            mw.begin()
+            data = data.to(simulator.device)
             pred = simulator(data)
             kinematic_mask = (data.x != 0)
             squared_diff = (pred-data.y).square()
             loss = squared_diff[kinematic_mask].sum() / kinematic_mask.sum()
-            loss.backward()
-            optimizer.step()
-            scheduler.step()
+            mw.zero_grad()
+            loss.backward(create_graph=True)
+            mw.step()
+            # optimizer.step()
+            # scheduler.step()
             total_loss += loss.item()
             batch_count += 1
-            progress_bar.set_postfix({"loss": loss.item(), "avg_loss": total_loss / batch_count, "lr": optimizer.param_groups[0]["lr"]})
+            progress_bar.set_postfix({
+                "loss": loss.item(), 
+                "avg_loss": total_loss / batch_count, 
+                'lr': mw.optimizer.parameters["alpha"].item()
+            })
             total_step += 1
             train_loss_list.append((total_step, loss.item()))
 
@@ -66,21 +76,20 @@ def train(params, simulator, train_loader, valid_loader, valid_rollout_dataset):
                     torch.save(
                     {
                         "model": simulator.state_dict(),
-                        "optimizer": optimizer.state_dict(),
-                        "scheduler": scheduler.state_dict(),
+                        # "optimizer": optimizer.state_dict(),
+                        # "scheduler": scheduler.state_dict(),
                     },
                     os.path.join(model_path, f"{params.tag}_best_val_rollout.pt")
                 )
-                best_rollout = min(rollout_mse, best_rollout)
-                    
+                best_rollout = min(rollout_mse, best_rollout)   
                     
             # save model
             if total_step % params.save_interval == 0 or (total_step == len(train_loader)*params.epochs-1):
                 torch.save(
                     {
                         "model": simulator.state_dict(),
-                        "optimizer": optimizer.state_dict(),
-                        "scheduler": scheduler.state_dict(),
+                        # "optimizer": optimizer.state_dict(),
+                        # "scheduler": scheduler.state_dict(),
                     },
                     os.path.join(model_path, f"checkpoint_{total_step}.pt")
                 )

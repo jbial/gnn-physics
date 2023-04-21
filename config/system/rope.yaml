@@ -6,7 +6,7 @@ data_dir: "datasets/SpringPendulum"
 n_bodies: 4
 spring_constant: 200
 gravity: -9.81
-position_range: [-1.0, 1.0]
+position_range: [-0.1, 0.1]
 compression_range: [0.25, 1.0]
 
 init_height: 1.0
@@ -16,7 +16,7 @@ mass: 1.
 damping_factor: 0.025
 
 dt: 0.02
-num_train_rollouts: 50
+num_train_rollouts: 100
 num_valid_rollouts: 10
 num_test_rollouts: 1
 timesteps: 100

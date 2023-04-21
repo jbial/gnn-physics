@@ -23,6 +23,10 @@ def finite_difference(x, h):
     return dx
 
 
+def device():
+    return torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
+
 def set_seed(seed):
     """Fix the random seed for reproducibility
     """
